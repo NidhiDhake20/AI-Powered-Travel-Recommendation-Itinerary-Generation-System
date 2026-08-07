@@ -1,0 +1,28 @@
+# gateway/main.py
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from routes.proxy import router
+from dotenv import load_dotenv
+
+load_dotenv()
+
+app = FastAPI(title="TravelAI Gateway")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(router, prefix="/api")
+
+@app.get("/")
+async def root():
+    return {"service": "TravelAI Gateway", "status": "running", "port": 8000}
+
+@app.get("/health")
+async def health():
+    return {"status": "healthy"}
